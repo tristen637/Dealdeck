@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
@@ -6,7 +7,7 @@ import dynamic from 'next/dynamic'
 
 const Underwriter = dynamic(() => import('@/components/underwriter/Underwriter'), { ssr: false })
 
-export default function Dashboard() {
+function DashboardContent() {
   const router = useRouter()
   const params = useSearchParams()
   const [user, setUser] = useState<any>(null)
@@ -51,8 +52,6 @@ export default function Dashboard() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F9FAFB', fontFamily: 'system-ui, sans-serif' }}>
-
-      {/* Nav */}
       <nav style={{ background: '#111827', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, position: 'sticky', top: 0, zIndex: 50 }}>
         <a href="/" style={{ fontWeight: 800, fontSize: 18, color: '#F9FAFB', textDecoration: 'none' }}>
           Deal<span style={{ color: '#10B981' }}>Desk</span>
@@ -73,7 +72,6 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      {/* Trial expired banner */}
       {!hasAccess && (
         <div style={{ background: '#FEF2F2', borderBottom: '1px solid #FCA5A5', padding: '12px 20px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
           <span style={{ fontSize: 14, color: '#991B1B', fontWeight: 600 }}>Your free trial has ended.</span>
@@ -83,14 +81,12 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Upgraded success message */}
       {params.get('upgraded') === 'true' && (
         <div style={{ background: '#ECFDF5', borderBottom: '1px solid #6EE7B7', padding: '12px 20px', textAlign: 'center', fontSize: 14, color: '#065F46', fontWeight: 600 }}>
           🎉 Welcome to Pro! Unlimited analyses unlocked.
         </div>
       )}
 
-      {/* Main */}
       <div style={{ maxWidth: 620, margin: '0 auto', padding: '20px 16px 60px' }}>
         {hasAccess ? (
           <Underwriter />
@@ -98,7 +94,7 @@ export default function Dashboard() {
           <div style={{ textAlign: 'center', padding: '80px 20px' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
             <h2 style={{ fontWeight: 800, fontSize: 22, marginBottom: 8 }}>Trial ended</h2>
-            <p style={{ color: '#6B7280', marginBottom: 24, fontSize: 15 }}>Upgrade to Pro for unlimited analyses — every tool, fully unlocked.— SFH, multifamily, MHP, and wholesale.</p>
+            <p style={{ color: '#6B7280', marginBottom: 24, fontSize: 15 }}>Upgrade to Pro for unlimited analyses — every tool, fully unlocked.</p>
             <button onClick={handleUpgrade} style={{ background: '#10B981', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 32px', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>
               Upgrade to Pro — $67/month
             </button>
@@ -107,4 +103,8 @@ export default function Dashboard() {
       </div>
     </div>
   )
+}
+
+export default function Dashboard() {
+  return <Suspense><DashboardContent /></Suspense>
 }
